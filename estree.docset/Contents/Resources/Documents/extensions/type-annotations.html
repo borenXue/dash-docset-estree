@@ -1,0 +1,56 @@
+
+    <!-- single file version -->
+    <!DOCTYPE html>
+      <html>
+        <head>
+          <link href="css/github.css" rel="stylesheet" type="text/css">
+          <meta charset="utf-8" />
+        </head>
+        <body>
+          <h1> type annotations </h1>
+          <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<p>This document specifies the extensions to the <a href="es5.md">core ESTree AST types</a> to support type annotations.</p>
+<ul>
+<li><a href="#typeannotations">Type Annotations</a></li>
+<li><a href="#identifier">Identifier</a></li>
+<li><a href="#functions">Functions</a></li>
+<li><a href="#patterns">Patterns</a><ul>
+<li><a href="#objectpattern">ObjectPattern</a></li>
+<li><a href="#arraypattern">ArrayPattern</a></li>
+<li><a href="#restelement">RestElement</a></li>
+</ul>
+</li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+<h1 id="type-annotations">Type Annotations</h1>
+<pre><code class="language-js">interface TypeAnnotation &lt;: Node { }</code></pre>
+<p>Any type annotation.</p>
+<h1 id="identifier">Identifier</h1>
+<pre><code class="language-js">extend interface Identifier {
+    typeAnnotation: TypeAnnotation | null;
+}</code></pre>
+<p>The <code>typeAnnotation</code> property is used only in the case of variable declarations with type annotations or function arguments with type annotations.</p>
+<h1 id="functions">Functions</h1>
+<pre><code class="language-js">extend interface Function {
+    returnType: TypeAnnotation | null;
+}</code></pre>
+<p>The <code>returnType</code> property is used to specify the type annotation for the return value of the function.</p>
+<h1 id="patterns">Patterns</h1>
+<h2 id="objectpattern">ObjectPattern</h2>
+<pre><code class="language-js">extend interface ObjectPattern {
+    typeAnnotation: TypeAnnotation | null;
+}</code></pre>
+<h2 id="arraypattern">ArrayPattern</h2>
+<pre><code class="language-js">extend interface ArrayPattern {
+    typeAnnotation: TypeAnnotation | null;
+}</code></pre>
+<h2 id="restelement">RestElement</h2>
+<pre><code class="language-js">extend interface RestElement {
+    typeAnnotation: TypeAnnotation | null;
+}</code></pre>
+
+        </body>
+      </html>
+  

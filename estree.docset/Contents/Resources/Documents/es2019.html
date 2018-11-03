@@ -1,0 +1,21 @@
+
+    <!-- single file version -->
+    <!DOCTYPE html>
+      <html>
+        <head>
+          <link href="css/github.css" rel="stylesheet" type="text/css">
+          <meta charset="utf-8" />
+        </head>
+        <body>
+          <h1> es2019 </h1>
+          <p>This document specifies the extensions to the core ESTree AST types to support the ES2019 grammar.</p>
+<h1 id="statements">Statements</h1>
+<h2 id="catchclause">CatchClause</h2>
+<pre><code class="language-js">extend interface CatchClause {
+    param: Pattern | null;
+}</code></pre>
+<p>The <code>param</code> is <code>null</code> if the <code>catch</code> binding is omitted. E.g., <code>try { foo() } catch { bar() }</code></p>
+
+        </body>
+      </html>
+  

@@ -1,0 +1,282 @@
+
+    <!-- single file version -->
+    <!DOCTYPE html>
+      <html>
+        <head>
+          <link href="css/github.css" rel="stylesheet" type="text/css">
+          <meta charset="utf-8" />
+        </head>
+        <body>
+          <h1> deprecated </h1>
+          <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<p>This document specifies deprecated extensions to the ESTree API that were at one point supported in Mozilla&#39;s SpiderMonkey JavaScript engine for features that were experimental or came from defunct standards.</p>
+<ul>
+<li><a href="#functions">Functions</a></li>
+<li><a href="#statements">Statements</a><ul>
+<li><a href="#forinstatement">ForInStatement</a></li>
+<li><a href="#letstatement">LetStatement</a></li>
+<li><a href="#switchstatement">SwitchStatement</a></li>
+<li><a href="#trystatement">TryStatement</a></li>
+</ul>
+</li>
+<li><a href="#expressions">Expressions</a><ul>
+<li><a href="#comprehensionexpression">ComprehensionExpression</a></li>
+<li><a href="#generatorexpression">GeneratorExpression</a></li>
+<li><a href="#graphexpression">GraphExpression</a></li>
+<li><a href="#graphindexexpression">GraphIndexExpression</a></li>
+<li><a href="#letexpression">LetExpression</a></li>
+</ul>
+</li>
+<li><a href="#clauses">Clauses</a><ul>
+<li><a href="#catchclause">CatchClause</a></li>
+<li><a href="#comprehensionblock">ComprehensionBlock</a></li>
+</ul>
+</li>
+<li><a href="#miscellaneous">Miscellaneous</a><ul>
+<li><a href="#binaryoperator">BinaryOperator</a></li>
+</ul>
+</li>
+<li><a href="#e4x">E4X</a><ul>
+<li><a href="#declarations">Declarations</a><ul>
+<li><a href="#xmldefaultdeclaration">XMLDefaultDeclaration</a></li>
+</ul>
+</li>
+<li><a href="#expressions-1">Expressions</a><ul>
+<li><a href="#xmlanyname">XMLAnyName</a></li>
+<li><a href="#xmlqualifiedidentifier">XMLQualifiedIdentifier</a></li>
+<li><a href="#xmlfunctionqualifiedidentifier">XMLFunctionQualifiedIdentifier</a></li>
+<li><a href="#xmlattributeselector">XMLAttributeSelector</a></li>
+<li><a href="#xmlfilterexpression">XMLFilterExpression</a></li>
+<li><a href="#xmlelement">XMLElement</a></li>
+<li><a href="#xmllist">XMLList</a></li>
+</ul>
+</li>
+<li><a href="#xml">XML</a><ul>
+<li><a href="#xmlescape">XMLEscape</a></li>
+<li><a href="#xmltext">XMLText</a></li>
+<li><a href="#xmlstarttag">XMLStartTag</a></li>
+<li><a href="#xmlendtag">XMLEndTag</a></li>
+<li><a href="#xmlpointtag">XMLPointTag</a></li>
+<li><a href="#xmlname">XMLName</a></li>
+<li><a href="#xmlattribute">XMLAttribute</a></li>
+<li><a href="#xmlcdata">XMLCdata</a></li>
+<li><a href="#xmlcomment">XMLComment</a></li>
+<li><a href="#xmlprocessinginstruction">XMLProcessingInstruction</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+<h1 id="functions">Functions</h1>
+<pre><code class="language-js">extend interface Function {
+    body: BlockStatement | Expression;
+    expression: boolean;
+}</code></pre>
+<p>If the <code>expression</code> flag is true, the function is an <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/New_in_JavaScript/1.8#Expression_closures_%28Merge_into_own_page.2fsection%29">expression closure</a> and the <code>body</code> field is an expression.</p>
+<h1 id="statements">Statements</h1>
+<h2 id="forinstatement">ForInStatement</h2>
+<pre><code class="language-js">extend interface ForInStatement {
+   each: boolean;
+}</code></pre>
+<p>If <code>each</code> is true, a <code>for each</code>/<code>in</code> statement.</p>
+<h2 id="letstatement">LetStatement</h2>
+<pre><code class="language-js">interface LetStatement &lt;: Statement {
+    type: &quot;LetStatement&quot;;
+    head: [ VariableDeclarator ];
+    body: Statement;
+}</code></pre>
+<p>A <code>let</code> statement.</p>
+<h2 id="switchstatement">SwitchStatement</h2>
+<pre><code class="language-js">extend interface SwitchStatement {
+    lexical: boolean;
+}</code></pre>
+<p>The <code>lexical</code> flag is metadata indicating whether the <code>switch</code> statement contains any unnested <code>let</code> declarations (and therefore introduces a new lexical scope).</p>
+<h2 id="trystatement">TryStatement</h2>
+<pre><code class="language-js">extend interface TryStatement {
+    handlers: [ CatchClause ];
+    guardedHandlers: [ CatchClause ];
+}</code></pre>
+<p>The <code>length</code> of <code>handlers</code> may be any non-negative integer.</p>
+<h1 id="expressions">Expressions</h1>
+<h2 id="comprehensionexpression">ComprehensionExpression</h2>
+<pre><code class="language-js">interface ComprehensionExpression &lt;: Expression {
+    type: &quot;ComprehensionExpression&quot;;
+    body: Expression;
+    blocks: [ ComprehensionBlock ];
+    filter: Expression | null;
+}</code></pre>
+<p>An array comprehension. The <code>blocks</code> array corresponds to the sequence of <code>for</code> and <code>for each</code> blocks. The optional <code>filter</code> expression corresponds to the final <code>if</code> clause, if present.</p>
+<h2 id="generatorexpression">GeneratorExpression</h2>
+<pre><code class="language-js">interface GeneratorExpression &lt;: Expression {
+    type: &quot;GeneratorExpression&quot;;
+    body: Expression;
+    blocks: [ ComprehensionBlock ];
+    filter: Expression | null;
+}</code></pre>
+<p>A generator expression. As with array comprehensions, the <code>blocks</code> array corresponds to the sequence of <code>for</code> and <code>for each</code> blocks, and the optional <code>filter</code> expression corresponds to the final <code>if</code> clause, if present.</p>
+<h2 id="graphexpression">GraphExpression</h2>
+<pre><code class="language-js">interface GraphExpression &lt;: Expression {
+    type: &quot;GraphExpression&quot;;
+    index: uint32;
+    expression: Literal;
+}</code></pre>
+<p>A graph expression, aka &quot;sharp literal,&quot; such as <code>#1={ self: #1# }</code>.</p>
+<h2 id="graphindexexpression">GraphIndexExpression</h2>
+<pre><code class="language-js">interface GraphIndexExpression &lt;: Expression {
+    type: &quot;GraphIndexExpression&quot;;
+    index: uint32;
+}</code></pre>
+<p>A graph index expression, aka &quot;sharp variable,&quot; such as <code>#1#</code>.</p>
+<h2 id="letexpression">LetExpression</h2>
+<pre><code class="language-js">interface LetExpression &lt;: Expression {
+    type: &quot;LetExpression&quot;;
+    head: [ VariableDeclarator ];
+    body: Expression;
+}</code></pre>
+<p>A <code>let</code> expression.</p>
+<h1 id="clauses">Clauses</h1>
+<h2 id="catchclause">CatchClause</h2>
+<pre><code class="language-js">extend interface CatchClause {
+    guard: Expression | null;
+}</code></pre>
+<p>The optional <code>guard</code> property corresponds to the optional expression guard on the bound variable.</p>
+<h2 id="comprehensionblock">ComprehensionBlock</h2>
+<pre><code class="language-js">interface ComprehensionBlock &lt;: Node {
+    type: &quot;ComprehensionBlock&quot;;
+    left: Pattern;
+    right: Expression;
+    each: boolean;
+}</code></pre>
+<p>A <code>for</code> or <code>for each</code> block in an array comprehension or generator expression.</p>
+<h1 id="miscellaneous">Miscellaneous</h1>
+<h2 id="binaryoperator">BinaryOperator</h2>
+<pre><code class="language-js">extend enum BinaryOperator {
+    &quot;..&quot;
+}</code></pre>
+<p>The <code>&quot;..&quot;</code> token is E4X-specific.</p>
+<h1 id="e4x">E4X</h1>
+<p>E4X was specified by <a href="http://www.ecma-international.org/publications/standards/Ecma-357.htm">ECMA-357</a> but has become a defunct standard. It was implemented for several years in SpiderMonkey but was <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=788293">removed starting in Firefox 21</a>.</p>
+<h2 id="declarations">Declarations</h2>
+<h3 id="xmldefaultdeclaration">XMLDefaultDeclaration</h3>
+<pre><code class="language-js">interface XMLDefaultDeclaration &lt;: Declaration {
+    type: &quot;XMLDefaultDeclaration&quot;;
+    namespace: Expression;
+}</code></pre>
+<p>A <code>default xml namespace</code> declaration.</p>
+<h2 id="expressions">Expressions</h2>
+<h3 id="xmlanyname">XMLAnyName</h3>
+<pre><code class="language-js">interface XMLAnyName &lt;: Expression {
+    type: &quot;XMLAnyName&quot;;
+}</code></pre>
+<p>The special E4X wildcard pseudo-identifier <code>*</code>.</p>
+<h3 id="xmlqualifiedidentifier">XMLQualifiedIdentifier</h3>
+<pre><code class="language-js">interface XMLQualifiedIdentifier &lt;: Expression {
+    type: &quot;XMLQualifiedIdentifier&quot;;
+    left: Identifier | XMLAnyName;
+    right: Identifier | Expression;
+    computed: boolean;
+}</code></pre>
+<p>An E4X qualified identifier, i.e., a pseudo-identifier using the namespace separator <code>::</code>. If the qualified identifier has a computed name (i.e., the <code>id::[expr]</code> form), then <code>computed</code> is <code>true</code> and the <code>right</code> property is an expression.</p>
+<h3 id="xmlfunctionqualifiedidentifier">XMLFunctionQualifiedIdentifier</h3>
+<pre><code class="language-js">interface XMLFunctionQualifiedIdentifier &lt;: Expression {
+    type: &quot;XMLFunctionQualifiedIdentifier&quot;;
+    right: Identifier | Expression;
+    computed: boolean;
+}</code></pre>
+<p>An E4X identifier qualified by the <code>function</code> keyword, e.g., <code>function::id</code>. (This functionality was a non-standard SpiderMonkey extension.)</p>
+<h3 id="xmlattributeselector">XMLAttributeSelector</h3>
+<pre><code class="language-js">interface XMLAttributeSelector &lt;: Expression {
+    type: &quot;XMLAttributeSelector&quot;;
+    attribute: Expression;
+}</code></pre>
+<p>An E4X attribute selector expression, i.e., an <code>@</code> expression.</p>
+<h3 id="xmlfilterexpression">XMLFilterExpression</h3>
+<pre><code class="language-js">interface XMLFilterExpression &lt;: Expression {
+    type: &quot;XMLFilterExpression&quot;;
+    left: Expression;
+    right: Expression;
+}</code></pre>
+<p>An E4X list filter expression, i.e., an expression of the form <code>expr.(expr)</code>.</p>
+<h3 id="xmlelement">XMLElement</h3>
+<pre><code class="language-js">interface XMLElement &lt;: XML, Expression {
+    type: &quot;XMLElement&quot;;
+    contents: [ XML ];
+}</code></pre>
+<p>An E4X literal representing a single XML element.</p>
+<h3 id="xmllist">XMLList</h3>
+<pre><code class="language-js">interface XMLList &lt;: XML, Expression {
+    type: &quot;XMLList&quot;;
+    contents: [ XML ];
+}</code></pre>
+<p>An E4X literal representing a list of XML elements.</p>
+<h2 id="xml">XML</h2>
+<pre><code class="language-js">interface XML &lt;: Node { }</code></pre>
+<p>XML data.</p>
+<h3 id="xmlescape">XMLEscape</h3>
+<pre><code class="language-js">interface XMLEscape &lt;: XML {
+    type: &quot;XMLEscape&quot;;
+    expression: Expression;
+}</code></pre>
+<p>XML data with an escaped JavaScript expression.</p>
+<h3 id="xmltext">XMLText</h3>
+<pre><code class="language-js">interface XMLText &lt;: XML {
+    type: &quot;XMLText&quot;;
+    text: string;
+}</code></pre>
+<p>Literal XML text.</p>
+<h3 id="xmlstarttag">XMLStartTag</h3>
+<pre><code class="language-js">interface XMLStartTag &lt;: XML {
+    type: &quot;XMLStartTag&quot;;
+    contents: [ XML ];
+}</code></pre>
+<p>An XML start tag.</p>
+<h3 id="xmlendtag">XMLEndTag</h3>
+<pre><code class="language-js">interface XMLEndTag &lt;: XML {
+    type: &quot;XMLEndTag&quot;;
+    contents: [ XML ];
+}</code></pre>
+<p>An XML end tag.</p>
+<h3 id="xmlpointtag">XMLPointTag</h3>
+<pre><code class="language-js">interface XMLPointTag &lt;: XML {
+    type: &quot;XMLPointTag&quot;;
+    contents: [ XML ];
+}</code></pre>
+<p>An XML point tag.</p>
+<h3 id="xmlname">XMLName</h3>
+<pre><code class="language-js">interface XMLName &lt;: XML {
+    type: &quot;XMLName&quot;;
+    contents: string | [ XML ];
+}</code></pre>
+<p>An XML name.</p>
+<h3 id="xmlattribute">XMLAttribute</h3>
+<pre><code class="language-js">interface XMLAttribute &lt;: XML {
+    type: &quot;XMLAttribute&quot;;
+    value: string;
+}</code></pre>
+<p>An XML attribute value.</p>
+<h3 id="xmlcdata">XMLCdata</h3>
+<pre><code class="language-js">interface XMLCdata &lt;: XML {
+    type: &quot;XMLCdata&quot;;
+    contents: string;
+}</code></pre>
+<p>An XML CDATA node.</p>
+<h3 id="xmlcomment">XMLComment</h3>
+<pre><code class="language-js">interface XMLComment &lt;: XML {
+    type: &quot;XMLComment&quot;;
+    contents: string;
+}</code></pre>
+<p>An XML comment.</p>
+<h3 id="xmlprocessinginstruction">XMLProcessingInstruction</h3>
+<pre><code class="language-js">interface XMLProcessingInstruction &lt;: XML {
+    type: &quot;XMLProcessingInstruction&quot;;
+    target: string;
+    contents: string | null;
+}</code></pre>
+<p>An XML processing instruction.</p>
+
+        </body>
+      </html>
+  

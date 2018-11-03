@@ -1,0 +1,48 @@
+
+    <!-- single file version -->
+    <!DOCTYPE html>
+      <html>
+        <head>
+          <link href="css/github.css" rel="stylesheet" type="text/css">
+          <meta charset="utf-8" />
+        </head>
+        <body>
+          <h1> README </h1>
+          <h1 id="the-estree-spec">The ESTree Spec</h1>
+<p>Once upon a time, an <a href="http://calculist.org">unsuspecting Mozilla engineer</a> created an API in Firefox that exposed the SpiderMonkey engine&#39;s JavaScript parser as a JavaScript API. Said engineer <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Parser_API">documented the format it produced</a>, and this format caught on as a lingua franca for tools that manipulate JavaScript source code.</p>
+<p>Meanwhile JavaScript is evolving, notably with the upcoming release of ES2015. This site will serve as a community standard for people involved in building and using these tools to help evolve this format to keep up with the evolution of the JavaScript language.</p>
+<h1 id="discussion">Discussion</h1>
+<p>We&#39;ve started the process of bringing together various communities using this format to move it forward into the ES2015 era and beyond. Feel free to join us! We&#39;ll be discussing in the issue tracker and in <code>#esprima</code> on Freenode.</p>
+<h1 id="ast-descriptor-syntax">AST Descriptor Syntax</h1>
+<p>The spec uses a custom syntax to describe its structures.  For example, at the
+time of writing, &#39;es2015.md&#39; contained a description of <code>Program</code> as seen below</p>
+<pre><code class="language-js">extend interface Program {
+    sourceType: &quot;script&quot; | &quot;module&quot;;
+    body: [ Statement | ModuleDeclaration ];
+}</code></pre>
+<h1 id="participating-members">Participating Members</h1>
+<ul>
+<li>Dave Herman (Mozilla)</li>
+<li>Ingvar Stepanyan (<a href="https://github.com/ternjs/acorn">Acorn</a>)</li>
+<li><a href="https://github.com/nzakas">Nicholas C. Zakas</a> (<a href="https://github.com/eslint">ESLint</a>)</li>
+<li><a href="https://github.com/mikesherov">Mike Sherov</a>,  <a href="https://github.com/ariya">Ariya Hidayat</a> (<a href="https://github.com/jquery/esprima">Esprima</a>)</li>
+<li>Michael Ficarra (<a href="https://github.com/michaelficarra">@michaelficarra</a>)</li>
+<li><a href="https://github.com/hzoo">Henry Zhu</a>, <a href="https://github.com/loganfsmyth">Logan Smyth</a>, <a href="https://github.com/danez">Daniel Tschinder</a> (<a href="https://github.com/babel">Babel</a>)</li>
+</ul>
+<h1 id="inactive-members">Inactive Members</h1>
+<ul>
+<li>Sebastian McKenzie (<a href="https://github.com/babel/babel">Babel</a>)</li>
+<li>Kyle Simpson (<a href="https://github.com/getify">@getify</a>)</li>
+</ul>
+<h1 id="philosophy">Philosophy</h1>
+<p>Suggested additions and modifications must follow these guidelines:</p>
+<ol>
+<li><strong>Backwards compatible:</strong> Non-additive modifications to existing constructs will not be considered unless immense support is in favor of such changes. (<a href="https://github.com/estree/estree/issues/65">eg. #65</a>)</li>
+<li><strong>Contextless:</strong> Nodes should not retain any information about their parent. ie. a <code>FunctionExpression</code> should not be aware of if it&#39;s a concise method. (eg. <a href="https://github.com/estree/estree/issues/5">#5</a>)</li>
+<li><strong>Unique:</strong> Information should not be duplicated. ie. a <code>kind</code> property should not be present on <code>Literal</code> if the type can be discerned from the <code>value</code>. (eg. <a href="https://github.com/estree/estree/issues/61">#61</a>)</li>
+<li><strong>Extensible:</strong> New nodes should be specced to easily allow future spec additions. This means expanding the coverage of node types. ie. <code>MetaProperty</code> over <code>NewTarget</code> to cover future meta properties. (eg. <a href="https://github.com/estree/estree/pull/32">#32</a>)</li>
+</ol>
+
+        </body>
+      </html>
+  

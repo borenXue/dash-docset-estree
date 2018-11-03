@@ -1,0 +1,298 @@
+
+    <!-- single file version -->
+    <!DOCTYPE html>
+      <html>
+        <head>
+          <link href="css/github.css" rel="stylesheet" type="text/css">
+          <meta charset="utf-8" />
+        </head>
+        <body>
+          <h1> es2015 </h1>
+          <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<p>This document specifies the extensions to the <a href="es5.md">core ESTree AST types</a> to support the ES2015 grammar.</p>
+<ul>
+<li><a href="#programs">Programs</a></li>
+<li><a href="#functions">Functions</a></li>
+<li><a href="#statements">Statements</a><ul>
+<li><a href="#forofstatement">ForOfStatement</a></li>
+</ul>
+</li>
+<li><a href="#declarations">Declarations</a><ul>
+<li><a href="#variabledeclaration">VariableDeclaration</a></li>
+</ul>
+</li>
+<li><a href="#expressions">Expressions</a><ul>
+<li><a href="#arrowfunctionexpression">ArrowFunctionExpression</a></li>
+<li><a href="#yieldexpression">YieldExpression</a></li>
+</ul>
+</li>
+<li><a href="#template-literals">Template Literals</a><ul>
+<li><a href="#templateliteral">TemplateLiteral</a></li>
+<li><a href="#taggedtemplateexpression">TaggedTemplateExpression</a></li>
+<li><a href="#templateelement">TemplateElement</a></li>
+</ul>
+</li>
+<li><a href="#patterns">Patterns</a><ul>
+<li><a href="#objectpattern">ObjectPattern</a></li>
+<li><a href="#arraypattern">ArrayPattern</a></li>
+<li><a href="#restelement">RestElement</a></li>
+<li><a href="#assignmentpattern">AssignmentPattern</a></li>
+</ul>
+</li>
+<li><a href="#classes">Classes</a><ul>
+<li><a href="#classbody">ClassBody</a></li>
+<li><a href="#methoddefinition">MethodDefinition</a></li>
+<li><a href="#classdeclaration">ClassDeclaration</a></li>
+<li><a href="#classexpression">ClassExpression</a></li>
+<li><a href="#metaproperty">MetaProperty</a></li>
+</ul>
+</li>
+<li><a href="#modules">Modules</a><ul>
+<li><a href="#moduledeclaration">ModuleDeclaration</a></li>
+<li><a href="#modulespecifier">ModuleSpecifier</a></li>
+<li><a href="#imports">Imports</a><ul>
+<li><a href="#importdeclaration">ImportDeclaration</a></li>
+<li><a href="#importspecifier">ImportSpecifier</a></li>
+<li><a href="#importdefaultspecifier">ImportDefaultSpecifier</a></li>
+<li><a href="#importnamespacespecifier">ImportNamespaceSpecifier</a></li>
+</ul>
+</li>
+<li><a href="#exports">Exports</a><ul>
+<li><a href="#exportnameddeclaration">ExportNamedDeclaration</a></li>
+<li><a href="#exportspecifier">ExportSpecifier</a></li>
+<li><a href="#exportdefaultdeclaration">ExportDefaultDeclaration</a></li>
+<li><a href="#exportalldeclaration">ExportAllDeclaration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+<h1 id="programs">Programs</h1>
+<pre><code class="language-js">extend interface Program {
+    sourceType: &quot;script&quot; | &quot;module&quot;;
+    body: [ Statement | ModuleDeclaration ];
+}</code></pre>
+<p>Parsers must specify <code>sourceType</code> as <code>&quot;module&quot;</code> if the source has been parsed as an ES6 module. Otherwise, <code>sourceType</code> must be <code>&quot;script&quot;</code>.</p>
+<h1 id="functions">Functions</h1>
+<pre><code class="language-js">extend interface Function {
+    generator: boolean;
+}</code></pre>
+<h1 id="statements">Statements</h1>
+<h2 id="forofstatement">ForOfStatement</h2>
+<pre><code class="language-js">interface ForOfStatement &lt;: ForInStatement {
+    type: &quot;ForOfStatement&quot;;
+}</code></pre>
+<h1 id="declarations">Declarations</h1>
+<h2 id="variabledeclaration">VariableDeclaration</h2>
+<pre><code class="language-js">extend interface VariableDeclaration {
+    kind: &quot;var&quot; | &quot;let&quot; | &quot;const&quot;;
+}</code></pre>
+<h1 id="expressions">Expressions</h1>
+<pre><code class="language-js">interface Super &lt;: Node {
+    type: &quot;Super&quot;;
+}
+
+extend interface CallExpression {
+    callee: Expression | Super;
+}
+
+extend interface MemberExpression {
+    object: Expression | Super;
+}</code></pre>
+<p>A <code>super</code> pseudo-expression.</p>
+<pre><code class="language-js">interface SpreadElement &lt;: Node {
+    type: &quot;SpreadElement&quot;;
+    argument: Expression;
+}
+
+extend interface ArrayExpression {
+    elements: [ Expression | SpreadElement | null ];
+}
+
+extend interface CallExpression {
+    arguments: [ Expression | SpreadElement ];
+}
+
+extend interface NewExpression {
+    arguments: [ Expression | SpreadElement ];
+}</code></pre>
+<p>Spread expression, e.g., <code>[head, ...iter, tail]</code>, <code>f(head, ...iter, ...tail)</code>.</p>
+<p><strong>FIXME:</strong> This describes the Esprima and Acorn behaviors, which is not currently aligned with the SpiderMonkey behavior.</p>
+<pre><code class="language-js">extend interface AssignmentExpression {
+    left: Pattern;
+}</code></pre>
+<p>Note that pre-ES6 code was allowed <a href="https://github.com/estree/estree/pull/20#issuecomment-74584758">to pass references around</a> and so <code>left</code> was much more liberal; an implementation might choose to continue using <a href="https://github.com/estree/estree/blob/master/es5.md#assignmentexpression">old definition</a> if it needs to support such legacy code.</p>
+<pre><code class="language-js">extend interface Property {
+    key: Expression;
+    method: boolean;
+    shorthand: boolean;
+    computed: boolean;
+}</code></pre>
+<h2 id="arrowfunctionexpression">ArrowFunctionExpression</h2>
+<pre><code class="language-js">interface ArrowFunctionExpression &lt;: Function, Expression {
+    type: &quot;ArrowFunctionExpression&quot;;
+    body: FunctionBody | Expression;
+    expression: boolean;
+}</code></pre>
+<p>A fat arrow function expression, e.g., <code>let foo = (bar) =&gt; { /* body */ }</code>.</p>
+<h2 id="yieldexpression">YieldExpression</h2>
+<pre><code class="language-js">interface YieldExpression &lt;: Expression {
+    type: &quot;YieldExpression&quot;;
+    argument: Expression | null;
+    delegate: boolean;
+}</code></pre>
+<p>A <code>yield</code> expression.</p>
+<h1 id="template-literals">Template Literals</h1>
+<h2 id="templateliteral">TemplateLiteral</h2>
+<pre><code class="language-js">interface TemplateLiteral &lt;: Expression {
+    type: &quot;TemplateLiteral&quot;;
+    quasis: [ TemplateElement ];
+    expressions: [ Expression ];
+}</code></pre>
+<h2 id="taggedtemplateexpression">TaggedTemplateExpression</h2>
+<pre><code class="language-js">interface TaggedTemplateExpression &lt;: Expression {
+    type: &quot;TaggedTemplateExpression&quot;;
+    tag: Expression;
+    quasi: TemplateLiteral;
+}</code></pre>
+<h2 id="templateelement">TemplateElement</h2>
+<pre><code class="language-js">interface TemplateElement &lt;: Node {
+    type: &quot;TemplateElement&quot;;
+    tail: boolean;
+    value: {
+        cooked: string;
+        raw: string;
+    };
+}</code></pre>
+<h1 id="patterns">Patterns</h1>
+<h2 id="objectpattern">ObjectPattern</h2>
+<pre><code class="language-js">interface AssignmentProperty &lt;: Property {
+    type: &quot;Property&quot;; // inherited
+    value: Pattern;
+    kind: &quot;init&quot;;
+    method: false;
+}
+
+interface ObjectPattern &lt;: Pattern {
+    type: &quot;ObjectPattern&quot;;
+    properties: [ AssignmentProperty ];
+}</code></pre>
+<h2 id="arraypattern">ArrayPattern</h2>
+<pre><code class="language-js">interface ArrayPattern &lt;: Pattern {
+    type: &quot;ArrayPattern&quot;;
+    elements: [ Pattern | null ];
+}</code></pre>
+<h2 id="restelement">RestElement</h2>
+<pre><code class="language-js">interface RestElement &lt;: Pattern {
+    type: &quot;RestElement&quot;;
+    argument: Pattern;
+}</code></pre>
+<h2 id="assignmentpattern">AssignmentPattern</h2>
+<pre><code class="language-js">interface AssignmentPattern &lt;: Pattern {
+    type: &quot;AssignmentPattern&quot;;
+    left: Pattern;
+    right: Expression;
+}</code></pre>
+<h1 id="classes">Classes</h1>
+<pre><code class="language-js">interface Class &lt;: Node {
+    id: Identifier | null;
+    superClass: Expression | null;
+    body: ClassBody;
+}</code></pre>
+<h2 id="classbody">ClassBody</h2>
+<pre><code class="language-js">interface ClassBody &lt;: Node {
+    type: &quot;ClassBody&quot;;
+    body: [ MethodDefinition ];
+}</code></pre>
+<h2 id="methoddefinition">MethodDefinition</h2>
+<pre><code class="language-js">interface MethodDefinition &lt;: Node {
+    type: &quot;MethodDefinition&quot;;
+    key: Expression;
+    value: FunctionExpression;
+    kind: &quot;constructor&quot; | &quot;method&quot; | &quot;get&quot; | &quot;set&quot;;
+    computed: boolean;
+    static: boolean;
+}</code></pre>
+<h2 id="classdeclaration">ClassDeclaration</h2>
+<pre><code class="language-js">interface ClassDeclaration &lt;: Class, Declaration {
+    type: &quot;ClassDeclaration&quot;;
+    id: Identifier;
+}</code></pre>
+<h2 id="classexpression">ClassExpression</h2>
+<pre><code class="language-js">interface ClassExpression &lt;: Class, Expression {
+    type: &quot;ClassExpression&quot;;
+}</code></pre>
+<h2 id="metaproperty">MetaProperty</h2>
+<pre><code class="language-js">interface MetaProperty &lt;: Expression {
+    type: &quot;MetaProperty&quot;;
+    meta: Identifier;
+    property: Identifier;
+}</code></pre>
+<h1 id="modules">Modules</h1>
+<h2 id="moduledeclaration">ModuleDeclaration</h2>
+<pre><code class="language-js">interface ModuleDeclaration &lt;: Node { }</code></pre>
+<p>A module <code>import</code> or <code>export</code> declaration.</p>
+<h2 id="modulespecifier">ModuleSpecifier</h2>
+<pre><code class="language-js">interface ModuleSpecifier &lt;: Node {
+    local: Identifier;
+}</code></pre>
+<p>A specifier in an import or export declaration.</p>
+<h2 id="imports">Imports</h2>
+<h3 id="importdeclaration">ImportDeclaration</h3>
+<pre><code class="language-js">interface ImportDeclaration &lt;: ModuleDeclaration {
+    type: &quot;ImportDeclaration&quot;;
+    specifiers: [ ImportSpecifier | ImportDefaultSpecifier | ImportNamespaceSpecifier ];
+    source: Literal;
+}</code></pre>
+<p>An import declaration, e.g., <code>import foo from &quot;mod&quot;;</code>.</p>
+<h3 id="importspecifier">ImportSpecifier</h3>
+<pre><code class="language-js">interface ImportSpecifier &lt;: ModuleSpecifier {
+    type: &quot;ImportSpecifier&quot;;
+    imported: Identifier;
+}</code></pre>
+<p>An imported variable binding, e.g., <code>{foo}</code> in <code>import {foo} from &quot;mod&quot;</code> or <code>{foo as bar}</code> in <code>import {foo as bar} from &quot;mod&quot;</code>. The <code>imported</code> field refers to the name of the export imported from the module. The <code>local</code> field refers to the binding imported into the local module scope. If it is a basic named import, such as in <code>import {foo} from &quot;mod&quot;</code>, both <code>imported</code> and <code>local</code> are equivalent <code>Identifier</code> nodes; in this case an <code>Identifier</code> node representing <code>foo</code>. If it is an aliased import, such as in <code>import {foo as bar} from &quot;mod&quot;</code>, the <code>imported</code> field is an <code>Identifier</code> node representing <code>foo</code>, and the <code>local</code> field is an <code>Identifier</code> node representing <code>bar</code>.</p>
+<h3 id="importdefaultspecifier">ImportDefaultSpecifier</h3>
+<pre><code class="language-js">interface ImportDefaultSpecifier &lt;: ModuleSpecifier {
+    type: &quot;ImportDefaultSpecifier&quot;;
+}</code></pre>
+<p>A default import specifier, e.g., <code>foo</code> in <code>import foo from &quot;mod.js&quot;</code>.</p>
+<h3 id="importnamespacespecifier">ImportNamespaceSpecifier</h3>
+<pre><code class="language-js">interface ImportNamespaceSpecifier &lt;: ModuleSpecifier {
+    type: &quot;ImportNamespaceSpecifier&quot;;
+}</code></pre>
+<p>A namespace import specifier, e.g., <code>* as foo</code> in <code>import * as foo from &quot;mod.js&quot;</code>.</p>
+<h2 id="exports">Exports</h2>
+<h3 id="exportnameddeclaration">ExportNamedDeclaration</h3>
+<pre><code class="language-js">interface ExportNamedDeclaration &lt;: ModuleDeclaration {
+    type: &quot;ExportNamedDeclaration&quot;;
+    declaration: Declaration | null;
+    specifiers: [ ExportSpecifier ];
+    source: Literal | null;
+}</code></pre>
+<p>An export named declaration, e.g., <code>export {foo, bar};</code>, <code>export {foo} from &quot;mod&quot;;</code> or <code>export var foo = 1;</code>.</p>
+<p><em>Note: Having <code>declaration</code> populated with non-empty <code>specifiers</code> or non-null <code>source</code> results in an invalid state.</em></p>
+<h3 id="exportspecifier">ExportSpecifier</h3>
+<pre><code class="language-js">interface ExportSpecifier &lt;: ModuleSpecifier {
+    type: &quot;ExportSpecifier&quot;;
+    exported: Identifier;
+}</code></pre>
+<p>An exported variable binding, e.g., <code>{foo}</code> in <code>export {foo}</code> or <code>{bar as foo}</code> in <code>export {bar as foo}</code>. The <code>exported</code> field refers to the name exported in the module. The <code>local</code> field refers to the binding into the local module scope. If it is a basic named export, such as in <code>export {foo}</code>, both <code>exported</code> and <code>local</code> are equivalent <code>Identifier</code> nodes; in this case an <code>Identifier</code> node representing <code>foo</code>. If it is an aliased export, such as in <code>export {bar as foo}</code>, the <code>exported</code> field is an <code>Identifier</code> node representing <code>foo</code>, and the <code>local</code> field is an <code>Identifier</code> node representing <code>bar</code>.</p>
+<h3 id="exportdefaultdeclaration">ExportDefaultDeclaration</h3>
+<pre><code class="language-js">interface ExportDefaultDeclaration &lt;: ModuleDeclaration {
+    type: &quot;ExportDefaultDeclaration&quot;;
+    declaration: Declaration | Expression;
+}</code></pre>
+<p>An export default declaration, e.g., <code>export default function () {};</code> or <code>export default 1;</code>.</p>
+<h3 id="exportalldeclaration">ExportAllDeclaration</h3>
+<pre><code class="language-js">interface ExportAllDeclaration &lt;: ModuleDeclaration {
+    type: &quot;ExportAllDeclaration&quot;;
+    source: Literal;
+}</code></pre>
+<p>An export batch declaration, e.g., <code>export * from &quot;mod&quot;;</code>.</p>
+
+        </body>
+      </html>
+  

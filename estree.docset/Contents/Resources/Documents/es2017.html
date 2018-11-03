@@ -1,0 +1,24 @@
+
+    <!-- single file version -->
+    <!DOCTYPE html>
+      <html>
+        <head>
+          <link href="css/github.css" rel="stylesheet" type="text/css">
+          <meta charset="utf-8" />
+        </head>
+        <body>
+          <h1> es2017 </h1>
+          <p>This document specifies the extensions to the core ESTree AST types to support the ES2017 grammar.</p>
+<h2 id="function">Function</h2>
+<pre><code class="language-js">extend interface Function {
+    async: boolean;
+}</code></pre>
+<h2 id="awaitexpression">AwaitExpression</h2>
+<pre><code class="language-js">interface AwaitExpression &lt;: Expression {
+    type: &quot;AwaitExpression&quot;;
+    argument: Expression;
+}</code></pre>
+
+        </body>
+      </html>
+  

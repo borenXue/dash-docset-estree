@@ -1,0 +1,32 @@
+
+    <!-- single file version -->
+    <!DOCTYPE html>
+      <html>
+        <head>
+          <link href="css/github.css" rel="stylesheet" type="text/css">
+          <meta charset="utf-8" />
+        </head>
+        <body>
+          <h1> decorators </h1>
+          <h1 id="decorators"><a href="https://github.com/wycats/javascript-decorators">Decorators</a></h1>
+<h2 id="decorator">Decorator</h2>
+<pre><code class="language-js">interface Decorator &lt;: Node {
+    type: &quot;Decorator&quot;;
+    expression: Expression;
+}</code></pre>
+<h2 id="used">Used</h2>
+<pre><code class="language-js">extend interface MethodDefinition {
+    decorators: [ Decorator ];
+}
+
+extend interface Property {
+    decorators: [ Decorator ];
+}
+
+extend interface Class {
+    decorators: [ Decorator ];
+}</code></pre>
+
+        </body>
+      </html>
+  

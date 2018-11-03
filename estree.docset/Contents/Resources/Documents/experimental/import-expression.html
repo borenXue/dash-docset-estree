@@ -1,0 +1,23 @@
+
+    <!-- single file version -->
+    <!DOCTYPE html>
+      <html>
+        <head>
+          <link href="css/github.css" rel="stylesheet" type="text/css">
+          <meta charset="utf-8" />
+        </head>
+        <body>
+          <h1> import expression </h1>
+          <h1 id="dynamic-import-expression"><a href="https://github.com/domenic/proposal-dynamic-import">Dynamic Import Expression</a></h1>
+<h2 id="import">Import</h2>
+<pre><code class="language-js">interface Import &lt;: Node {
+    type: &quot;Import&quot;;
+}
+
+interface CallExpression &lt;: Expression {
+  callee: Expression | Super | Import;
+}</code></pre>
+
+        </body>
+      </html>
+  

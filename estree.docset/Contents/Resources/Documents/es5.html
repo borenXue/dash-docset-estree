@@ -1,0 +1,487 @@
+
+    <!-- single file version -->
+    <!DOCTYPE html>
+      <html>
+        <head>
+          <link href="css/github.css" rel="stylesheet" type="text/css">
+          <meta charset="utf-8" />
+        </head>
+        <body>
+          <h1> es5 </h1>
+          <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<p>This document specifies the core ESTree AST node types that support the ES5 grammar.</p>
+<ul>
+<li><a href="#node-objects">Node objects</a></li>
+<li><a href="#identifier">Identifier</a></li>
+<li><a href="#literal">Literal</a><ul>
+<li><a href="#regexpliteral">RegExpLiteral</a></li>
+</ul>
+</li>
+<li><a href="#programs">Programs</a></li>
+<li><a href="#functions">Functions</a></li>
+<li><a href="#statements">Statements</a><ul>
+<li><a href="#expressionstatement">ExpressionStatement</a></li>
+<li><a href="#blockstatement">BlockStatement</a></li>
+<li><a href="#emptystatement">EmptyStatement</a></li>
+<li><a href="#debuggerstatement">DebuggerStatement</a></li>
+<li><a href="#withstatement">WithStatement</a></li>
+<li><a href="#control-flow">Control flow</a><ul>
+<li><a href="#returnstatement">ReturnStatement</a></li>
+<li><a href="#labeledstatement">LabeledStatement</a></li>
+<li><a href="#breakstatement">BreakStatement</a></li>
+<li><a href="#continuestatement">ContinueStatement</a></li>
+</ul>
+</li>
+<li><a href="#choice">Choice</a><ul>
+<li><a href="#ifstatement">IfStatement</a></li>
+<li><a href="#switchstatement">SwitchStatement</a><ul>
+<li><a href="#switchcase">SwitchCase</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#exceptions">Exceptions</a><ul>
+<li><a href="#throwstatement">ThrowStatement</a></li>
+<li><a href="#trystatement">TryStatement</a><ul>
+<li><a href="#catchclause">CatchClause</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#loops">Loops</a><ul>
+<li><a href="#whilestatement">WhileStatement</a></li>
+<li><a href="#dowhilestatement">DoWhileStatement</a></li>
+<li><a href="#forstatement">ForStatement</a></li>
+<li><a href="#forinstatement">ForInStatement</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#declarations">Declarations</a><ul>
+<li><a href="#functiondeclaration">FunctionDeclaration</a></li>
+<li><a href="#variabledeclaration">VariableDeclaration</a><ul>
+<li><a href="#variabledeclarator">VariableDeclarator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#expressions">Expressions</a><ul>
+<li><a href="#thisexpression">ThisExpression</a></li>
+<li><a href="#arrayexpression">ArrayExpression</a></li>
+<li><a href="#objectexpression">ObjectExpression</a><ul>
+<li><a href="#property">Property</a></li>
+</ul>
+</li>
+<li><a href="#functionexpression">FunctionExpression</a></li>
+<li><a href="#unary-operations">Unary operations</a><ul>
+<li><a href="#unaryexpression">UnaryExpression</a><ul>
+<li><a href="#unaryoperator">UnaryOperator</a></li>
+</ul>
+</li>
+<li><a href="#updateexpression">UpdateExpression</a><ul>
+<li><a href="#updateoperator">UpdateOperator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#binary-operations">Binary operations</a><ul>
+<li><a href="#binaryexpression">BinaryExpression</a><ul>
+<li><a href="#binaryoperator">BinaryOperator</a></li>
+</ul>
+</li>
+<li><a href="#assignmentexpression">AssignmentExpression</a><ul>
+<li><a href="#assignmentoperator">AssignmentOperator</a></li>
+</ul>
+</li>
+<li><a href="#logicalexpression">LogicalExpression</a><ul>
+<li><a href="#logicaloperator">LogicalOperator</a></li>
+</ul>
+</li>
+<li><a href="#memberexpression">MemberExpression</a></li>
+</ul>
+</li>
+<li><a href="#conditionalexpression">ConditionalExpression</a></li>
+<li><a href="#callexpression">CallExpression</a></li>
+<li><a href="#newexpression">NewExpression</a></li>
+<li><a href="#sequenceexpression">SequenceExpression</a></li>
+</ul>
+</li>
+<li><a href="#patterns">Patterns</a></li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+<h1 id="node-objects">Node objects</h1>
+<p>ESTree AST nodes are represented as <code>Node</code> objects, which may have any prototype inheritance but which implement the following interface:</p>
+<pre><code class="language-js">interface Node {
+    type: string;
+    loc: SourceLocation | null;
+}</code></pre>
+<p>The <code>type</code> field is a string representing the AST variant type. Each subtype of <code>Node</code> is documented below with the specific string of its <code>type</code> field. You can use this field to determine which interface a node implements.</p>
+<p>The <code>loc</code> field represents the source location information of the node. If the node contains no information about the source location, the field is <code>null</code>; otherwise it is an object consisting of a start position (the position of the first character of the parsed source region) and an end position (the position of the first character after the parsed source region):</p>
+<pre><code class="language-js">interface SourceLocation {
+    source: string | null;
+    start: Position;
+    end: Position;
+}</code></pre>
+<p>Each <code>Position</code> object consists of a <code>line</code> number (1-indexed) and a <code>column</code> number (0-indexed):</p>
+<pre><code class="language-js">interface Position {
+    line: number; // &gt;= 1
+    column: number; // &gt;= 0
+}</code></pre>
+<h1 id="identifier">Identifier</h1>
+<pre><code class="language-js">interface Identifier &lt;: Expression, Pattern {
+    type: &quot;Identifier&quot;;
+    name: string;
+}</code></pre>
+<p>An identifier. Note that an identifier may be an expression or a destructuring pattern.</p>
+<h1 id="literal">Literal</h1>
+<pre><code class="language-js">interface Literal &lt;: Expression {
+    type: &quot;Literal&quot;;
+    value: string | boolean | null | number | RegExp;
+}</code></pre>
+<p>A literal token. Note that a literal can be an expression.</p>
+<h2 id="regexpliteral">RegExpLiteral</h2>
+<pre><code class="language-js">interface RegExpLiteral &lt;: Literal {
+  regex: {
+    pattern: string;
+    flags: string;
+  };
+}</code></pre>
+<p>The <code>regex</code> property allows regexes to be represented in environments that don’t
+support certain flags such as <code>y</code> or <code>u</code>. In environments that don&#39;t support
+these flags <code>value</code> will be <code>null</code> as the regex can&#39;t be represented natively.</p>
+<h1 id="programs">Programs</h1>
+<pre><code class="language-js">interface Program &lt;: Node {
+    type: &quot;Program&quot;;
+    body: [ Directive | Statement ];
+}</code></pre>
+<p>A complete program source tree.</p>
+<h1 id="functions">Functions</h1>
+<pre><code class="language-js">interface Function &lt;: Node {
+    id: Identifier | null;
+    params: [ Pattern ];
+    body: FunctionBody;
+}</code></pre>
+<p>A function <a href="#functiondeclaration">declaration</a> or <a href="#functionexpression">expression</a>.</p>
+<h1 id="statements">Statements</h1>
+<pre><code class="language-js">interface Statement &lt;: Node { }</code></pre>
+<p>Any statement.</p>
+<h2 id="expressionstatement">ExpressionStatement</h2>
+<pre><code class="language-js">interface ExpressionStatement &lt;: Statement {
+    type: &quot;ExpressionStatement&quot;;
+    expression: Expression;
+}</code></pre>
+<p>An expression statement, i.e., a statement consisting of a single expression.</p>
+<h2 id="directive">Directive</h2>
+<pre><code class="language-js">interface Directive &lt;: Node {
+    type: &quot;ExpressionStatement&quot;;
+    expression: Literal;
+    directive: string;
+}</code></pre>
+<p>A directive from the directive prologue of a script or function.
+The <code>directive</code> property is the raw string source of the directive without quotes.</p>
+<h2 id="blockstatement">BlockStatement</h2>
+<pre><code class="language-js">interface BlockStatement &lt;: Statement {
+    type: &quot;BlockStatement&quot;;
+    body: [ Statement ];
+}</code></pre>
+<p>A block statement, i.e., a sequence of statements surrounded by braces.</p>
+<h2 id="functionbody">FunctionBody</h2>
+<pre><code class="language-js">interface FunctionBody &lt;: BlockStatement {
+    body: [ Directive | Statement ];
+}</code></pre>
+<p>The body of a function, which is a block statement that may begin with directives.</p>
+<h2 id="emptystatement">EmptyStatement</h2>
+<pre><code class="language-js">interface EmptyStatement &lt;: Statement {
+    type: &quot;EmptyStatement&quot;;
+}</code></pre>
+<p>An empty statement, i.e., a solitary semicolon.</p>
+<h2 id="debuggerstatement">DebuggerStatement</h2>
+<pre><code class="language-js">interface DebuggerStatement &lt;: Statement {
+    type: &quot;DebuggerStatement&quot;;
+}</code></pre>
+<p>A <code>debugger</code> statement.</p>
+<h2 id="withstatement">WithStatement</h2>
+<pre><code class="language-js">interface WithStatement &lt;: Statement {
+    type: &quot;WithStatement&quot;;
+    object: Expression;
+    body: Statement;
+}</code></pre>
+<p>A <code>with</code> statement.</p>
+<h2 id="control-flow">Control flow</h2>
+<h3 id="returnstatement">ReturnStatement</h3>
+<pre><code class="language-js">interface ReturnStatement &lt;: Statement {
+    type: &quot;ReturnStatement&quot;;
+    argument: Expression | null;
+}</code></pre>
+<p>A <code>return</code> statement.</p>
+<h3 id="labeledstatement">LabeledStatement</h3>
+<pre><code class="language-js">interface LabeledStatement &lt;: Statement {
+    type: &quot;LabeledStatement&quot;;
+    label: Identifier;
+    body: Statement;
+}</code></pre>
+<p>A labeled statement, i.e., a statement prefixed by a <code>break</code>/<code>continue</code> label.</p>
+<h3 id="breakstatement">BreakStatement</h3>
+<pre><code class="language-js">interface BreakStatement &lt;: Statement {
+    type: &quot;BreakStatement&quot;;
+    label: Identifier | null;
+}</code></pre>
+<p>A <code>break</code> statement.</p>
+<h3 id="continuestatement">ContinueStatement</h3>
+<pre><code class="language-js">interface ContinueStatement &lt;: Statement {
+    type: &quot;ContinueStatement&quot;;
+    label: Identifier | null;
+}</code></pre>
+<p>A <code>continue</code> statement.</p>
+<h2 id="choice">Choice</h2>
+<h3 id="ifstatement">IfStatement</h3>
+<pre><code class="language-js">interface IfStatement &lt;: Statement {
+    type: &quot;IfStatement&quot;;
+    test: Expression;
+    consequent: Statement;
+    alternate: Statement | null;
+}</code></pre>
+<p>An <code>if</code> statement.</p>
+<h3 id="switchstatement">SwitchStatement</h3>
+<pre><code class="language-js">interface SwitchStatement &lt;: Statement {
+    type: &quot;SwitchStatement&quot;;
+    discriminant: Expression;
+    cases: [ SwitchCase ];
+}</code></pre>
+<p>A <code>switch</code> statement.</p>
+<h4 id="switchcase">SwitchCase</h4>
+<pre><code class="language-js">interface SwitchCase &lt;: Node {
+    type: &quot;SwitchCase&quot;;
+    test: Expression | null;
+    consequent: [ Statement ];
+}</code></pre>
+<p>A <code>case</code> (if <code>test</code> is an <code>Expression</code>) or <code>default</code> (if <code>test === null</code>) clause in the body of a <code>switch</code> statement.</p>
+<h2 id="exceptions">Exceptions</h2>
+<h3 id="throwstatement">ThrowStatement</h3>
+<pre><code class="language-js">interface ThrowStatement &lt;: Statement {
+    type: &quot;ThrowStatement&quot;;
+    argument: Expression;
+}</code></pre>
+<p>A <code>throw</code> statement.</p>
+<h3 id="trystatement">TryStatement</h3>
+<pre><code class="language-js">interface TryStatement &lt;: Statement {
+    type: &quot;TryStatement&quot;;
+    block: BlockStatement;
+    handler: CatchClause | null;
+    finalizer: BlockStatement | null;
+}</code></pre>
+<p>A <code>try</code> statement. If <code>handler</code> is <code>null</code> then <code>finalizer</code> must be a <code>BlockStatement</code>.</p>
+<h4 id="catchclause">CatchClause</h4>
+<pre><code class="language-js">interface CatchClause &lt;: Node {
+    type: &quot;CatchClause&quot;;
+    param: Pattern;
+    body: BlockStatement;
+}</code></pre>
+<p>A <code>catch</code> clause following a <code>try</code> block.</p>
+<h2 id="loops">Loops</h2>
+<h3 id="whilestatement">WhileStatement</h3>
+<pre><code class="language-js">interface WhileStatement &lt;: Statement {
+    type: &quot;WhileStatement&quot;;
+    test: Expression;
+    body: Statement;
+}</code></pre>
+<p>A <code>while</code> statement.</p>
+<h3 id="dowhilestatement">DoWhileStatement</h3>
+<pre><code class="language-js">interface DoWhileStatement &lt;: Statement {
+    type: &quot;DoWhileStatement&quot;;
+    body: Statement;
+    test: Expression;
+}</code></pre>
+<p>A <code>do</code>/<code>while</code> statement.</p>
+<h3 id="forstatement">ForStatement</h3>
+<pre><code class="language-js">interface ForStatement &lt;: Statement {
+    type: &quot;ForStatement&quot;;
+    init: VariableDeclaration | Expression | null;
+    test: Expression | null;
+    update: Expression | null;
+    body: Statement;
+}</code></pre>
+<p>A <code>for</code> statement.</p>
+<h3 id="forinstatement">ForInStatement</h3>
+<pre><code class="language-js">interface ForInStatement &lt;: Statement {
+    type: &quot;ForInStatement&quot;;
+    left: VariableDeclaration |  Pattern;
+    right: Expression;
+    body: Statement;
+}</code></pre>
+<p>A <code>for</code>/<code>in</code> statement.</p>
+<h1 id="declarations">Declarations</h1>
+<pre><code class="language-js">interface Declaration &lt;: Statement { }</code></pre>
+<p>Any declaration node. Note that declarations are considered statements; this is because declarations can appear in any statement context.</p>
+<h2 id="functiondeclaration">FunctionDeclaration</h2>
+<pre><code class="language-js">interface FunctionDeclaration &lt;: Function, Declaration {
+    type: &quot;FunctionDeclaration&quot;;
+    id: Identifier;
+}</code></pre>
+<p>A function declaration. Note that unlike in the parent interface <code>Function</code>, the <code>id</code> cannot be <code>null</code>.</p>
+<h2 id="variabledeclaration">VariableDeclaration</h2>
+<pre><code class="language-js">interface VariableDeclaration &lt;: Declaration {
+    type: &quot;VariableDeclaration&quot;;
+    declarations: [ VariableDeclarator ];
+    kind: &quot;var&quot;;
+}</code></pre>
+<p>A variable declaration.</p>
+<h3 id="variabledeclarator">VariableDeclarator</h3>
+<pre><code class="language-js">interface VariableDeclarator &lt;: Node {
+    type: &quot;VariableDeclarator&quot;;
+    id: Pattern;
+    init: Expression | null;
+}</code></pre>
+<p>A variable declarator.</p>
+<h1 id="expressions">Expressions</h1>
+<pre><code class="language-js">interface Expression &lt;: Node { }</code></pre>
+<p>Any expression node. Since the left-hand side of an assignment may be any expression in general, an expression can also be a pattern.</p>
+<h2 id="thisexpression">ThisExpression</h2>
+<pre><code class="language-js">interface ThisExpression &lt;: Expression {
+    type: &quot;ThisExpression&quot;;
+}</code></pre>
+<p>A <code>this</code> expression.</p>
+<h2 id="arrayexpression">ArrayExpression</h2>
+<pre><code class="language-js">interface ArrayExpression &lt;: Expression {
+    type: &quot;ArrayExpression&quot;;
+    elements: [ Expression | null ];
+}</code></pre>
+<p>An array expression.</p>
+<h2 id="objectexpression">ObjectExpression</h2>
+<pre><code class="language-js">interface ObjectExpression &lt;: Expression {
+    type: &quot;ObjectExpression&quot;;
+    properties: [ Property ];
+}</code></pre>
+<p>An object expression.</p>
+<h3 id="property">Property</h3>
+<pre><code class="language-js">interface Property &lt;: Node {
+    type: &quot;Property&quot;;
+    key: Literal | Identifier;
+    value: Expression;
+    kind: &quot;init&quot; | &quot;get&quot; | &quot;set&quot;;
+}</code></pre>
+<p>A literal property in an object expression can have either a string or number as its <code>value</code>. Ordinary property initializers have a <code>kind</code> value <code>&quot;init&quot;</code>; getters and setters have the kind values <code>&quot;get&quot;</code> and <code>&quot;set&quot;</code>, respectively.</p>
+<h2 id="functionexpression">FunctionExpression</h2>
+<pre><code class="language-js">interface FunctionExpression &lt;: Function, Expression {
+    type: &quot;FunctionExpression&quot;;
+}</code></pre>
+<p>A <code>function</code> expression.</p>
+<h2 id="unary-operations">Unary operations</h2>
+<h3 id="unaryexpression">UnaryExpression</h3>
+<pre><code class="language-js">interface UnaryExpression &lt;: Expression {
+    type: &quot;UnaryExpression&quot;;
+    operator: UnaryOperator;
+    prefix: boolean;
+    argument: Expression;
+}</code></pre>
+<p>A unary operator expression.</p>
+<h4 id="unaryoperator">UnaryOperator</h4>
+<pre><code class="language-js">enum UnaryOperator {
+    &quot;-&quot; | &quot;+&quot; | &quot;!&quot; | &quot;~&quot; | &quot;typeof&quot; | &quot;void&quot; | &quot;delete&quot;
+}</code></pre>
+<p>A unary operator token.</p>
+<h3 id="updateexpression">UpdateExpression</h3>
+<pre><code class="language-js">interface UpdateExpression &lt;: Expression {
+    type: &quot;UpdateExpression&quot;;
+    operator: UpdateOperator;
+    argument: Expression;
+    prefix: boolean;
+}</code></pre>
+<p>An update (increment or decrement) operator expression.</p>
+<h4 id="updateoperator">UpdateOperator</h4>
+<pre><code class="language-js">enum UpdateOperator {
+    &quot;++&quot; | &quot;--&quot;
+}</code></pre>
+<p>An update (increment or decrement) operator token.</p>
+<h2 id="binary-operations">Binary operations</h2>
+<h3 id="binaryexpression">BinaryExpression</h3>
+<pre><code class="language-js">interface BinaryExpression &lt;: Expression {
+    type: &quot;BinaryExpression&quot;;
+    operator: BinaryOperator;
+    left: Expression;
+    right: Expression;
+}</code></pre>
+<p>A binary operator expression.</p>
+<h4 id="binaryoperator">BinaryOperator</h4>
+<pre><code class="language-js">enum BinaryOperator {
+    &quot;==&quot; | &quot;!=&quot; | &quot;===&quot; | &quot;!==&quot;
+         | &quot;&lt;&quot; | &quot;&lt;=&quot; | &quot;&gt;&quot; | &quot;&gt;=&quot;
+         | &quot;&lt;&lt;&quot; | &quot;&gt;&gt;&quot; | &quot;&gt;&gt;&gt;&quot;
+         | &quot;+&quot; | &quot;-&quot; | &quot;*&quot; | &quot;/&quot; | &quot;%&quot;
+         | &quot;|&quot; | &quot;^&quot; | &quot;&amp;&quot; | &quot;in&quot;
+         | &quot;instanceof&quot;
+}</code></pre>
+<p>A binary operator token.</p>
+<h3 id="assignmentexpression">AssignmentExpression</h3>
+<pre><code class="language-js">interface AssignmentExpression &lt;: Expression {
+    type: &quot;AssignmentExpression&quot;;
+    operator: AssignmentOperator;
+    left: Pattern | Expression;
+    right: Expression;
+}</code></pre>
+<p>An assignment operator expression.</p>
+<h4 id="assignmentoperator">AssignmentOperator</h4>
+<pre><code class="language-js">enum AssignmentOperator {
+    &quot;=&quot; | &quot;+=&quot; | &quot;-=&quot; | &quot;*=&quot; | &quot;/=&quot; | &quot;%=&quot;
+        | &quot;&lt;&lt;=&quot; | &quot;&gt;&gt;=&quot; | &quot;&gt;&gt;&gt;=&quot;
+        | &quot;|=&quot; | &quot;^=&quot; | &quot;&amp;=&quot;
+}</code></pre>
+<p>An assignment operator token.</p>
+<h3 id="logicalexpression">LogicalExpression</h3>
+<pre><code class="language-js">interface LogicalExpression &lt;: Expression {
+    type: &quot;LogicalExpression&quot;;
+    operator: LogicalOperator;
+    left: Expression;
+    right: Expression;
+}</code></pre>
+<p>A logical operator expression.</p>
+<h4 id="logicaloperator">LogicalOperator</h4>
+<pre><code class="language-js">enum LogicalOperator {
+    &quot;||&quot; | &quot;&amp;&amp;&quot;
+}</code></pre>
+<p>A logical operator token.</p>
+<h3 id="memberexpression">MemberExpression</h3>
+<pre><code class="language-js">interface MemberExpression &lt;: Expression, Pattern {
+    type: &quot;MemberExpression&quot;;
+    object: Expression;
+    property: Expression;
+    computed: boolean;
+}</code></pre>
+<p>A member expression. If <code>computed</code> is <code>true</code>, the node corresponds to a computed (<code>a[b]</code>) member expression and <code>property</code> is an <code>Expression</code>. If <code>computed</code> is <code>false</code>, the node corresponds to a static (<code>a.b</code>) member expression and <code>property</code> is an <code>Identifier</code>.</p>
+<h2 id="conditionalexpression">ConditionalExpression</h2>
+<pre><code class="language-js">interface ConditionalExpression &lt;: Expression {
+    type: &quot;ConditionalExpression&quot;;
+    test: Expression;
+    alternate: Expression;
+    consequent: Expression;
+}</code></pre>
+<p>A conditional expression, i.e., a ternary <code>?</code>/<code>:</code> expression.</p>
+<h2 id="callexpression">CallExpression</h2>
+<pre><code class="language-js">interface CallExpression &lt;: Expression {
+    type: &quot;CallExpression&quot;;
+    callee: Expression;
+    arguments: [ Expression ];
+}</code></pre>
+<p>A function or method call expression.</p>
+<h2 id="newexpression">NewExpression</h2>
+<pre><code class="language-js">interface NewExpression &lt;: Expression {
+    type: &quot;NewExpression&quot;;
+    callee: Expression;
+    arguments: [ Expression ];
+}</code></pre>
+<p>A <code>new</code> expression.</p>
+<h2 id="sequenceexpression">SequenceExpression</h2>
+<pre><code class="language-js">interface SequenceExpression &lt;: Expression {
+    type: &quot;SequenceExpression&quot;;
+    expressions: [ Expression ];
+}</code></pre>
+<p>A sequence expression, i.e., a comma-separated sequence of expressions.</p>
+<h1 id="patterns">Patterns</h1>
+<p>Destructuring binding and assignment are not part of ES5, but all binding positions accept <code>Pattern</code> to allow for destructuring in ES6. Nevertheless, for ES5, the only <code>Pattern</code> subtype is <a href="#identifier"><code>Identifier</code></a>.</p>
+<pre><code class="language-js">interface Pattern &lt;: Node { }</code></pre>
+
+        </body>
+      </html>
+  

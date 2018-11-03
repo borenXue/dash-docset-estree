@@ -1,0 +1,38 @@
+
+    <!-- single file version -->
+    <!DOCTYPE html>
+      <html>
+        <head>
+          <link href="css/github.css" rel="stylesheet" type="text/css">
+          <meta charset="utf-8" />
+        </head>
+        <body>
+          <h1> es2018 </h1>
+          <p>This document specifies the extensions to the core ESTree AST types to support the ES2018 grammar.</p>
+<h1 id="statements">Statements</h1>
+<pre><code class="language-js">extend interface ForOfStatement {
+  await: boolean;
+}</code></pre>
+<p><code>for-await-of</code> statements, e.g., <code>for await (const x of xs) {</code></p>
+<h1 id="expressions">Expressions</h1>
+<pre><code class="language-js">extend interface ObjectExpression {
+    properties: [ Property | SpreadElement ];
+}</code></pre>
+<p>Spread properties, e.g., <code>{a: 1, ...obj, b: 2}</code>.</p>
+<h1 id="template-literals">Template Literals</h1>
+<pre><code class="language-js">extend interface TemplateElement {
+    value: {
+        cooked: string | null;
+        raw: string;
+    };
+}</code></pre>
+<p>If the template literal is tagged and the text has an invalid escape, <code>cooked</code> will be <code>null</code>, e.g., <code>tag`\unicode and \u{55}`</code></p>
+<h1 id="patterns">Patterns</h1>
+<pre><code class="language-js">extend interface ObjectPattern {
+    properties: [ AssignmentProperty | RestElement ];
+}</code></pre>
+<p>Rest properties, e.g., <code>{a, ...rest} = obj</code>.</p>
+
+        </body>
+      </html>
+  
